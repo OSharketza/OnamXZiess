@@ -52,9 +52,8 @@
 
   header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line-soft)}
   .nav{display:flex;align-items:center;justify-content:space-between;height:70px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .brand .mark{background:var(--ink-strong);color:#fff;font-weight:800;font-size:13px;letter-spacing:0.18em;padding:6px 8px 5px;line-height:1}
-  .brand .name{color:var(--ink-strong);font-weight:800;font-size:19px;letter-spacing:-0.01em}
+  .brand{display:flex;align-items:center;gap:12px;text-decoration:none}
+  .brand-logo{height:42px;width:auto;display:block}
   .nav-links{display:flex;align-items:center;gap:30px}
   .nav-links a{font-size:15px;font-weight:600;color:#4A5064}
   .nav-links a:hover{color:var(--blue)}
@@ -358,6 +357,7 @@
     .nav-links{display:none}
     .nav-cta{display:none}
     .menu-btn{display:flex}
+    .brand-logo{height:36px}
     .trust .sep{display:none}
     .quotes{grid-template-columns:1fr}
     .metricband{grid-template-columns:1fr}
@@ -376,7 +376,7 @@
 
 <header>
   <div class="wrap nav">
-    <div class="brand"><span class="mark">ZEISS</span><span class="name">VisioGen</span></div>
+    <a href="#" class="brand" aria-label="ZEISS VisioGen"><img src="Logo.png" alt="ZEISS VisioGen" class="brand-logo" width="307" height="148" /></a>
     <nav class="nav-links">
       <a href="#safe">How it works</a>
       <a href="#worries">Why it's safe</a>
