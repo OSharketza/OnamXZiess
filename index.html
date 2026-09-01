@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ZEISS VisioGen — Human-Verified Patient Chat for Eye Care</title>
+<meta name="description" content="VisioGen is the after-hours voice of your practice. It answers your patients in seconds, escalates anything urgent, and a ZEISS-trained optometrist approves every reply before it's sent." />
+<style>
+  :root{
+    /* VisioGen live palette */
+    --blue:#0020A0;
+    --blue-deep:#001B85;
+    --blue-electric:#1A1FCB;
+    --blue-tint:#DFE4FA;
+    --blue-tint-2:#EEF1F8;
+    --ink:#0A0E2A;
+    --ink-strong:#0A0E2A;
+    --navy-card:#141A3D;
+    --body:#3A3F52;
+    --muted:#6B7185;
+    --band:#F6F8FC;
+    --band-2:#EEF1F8;
+    --line:#D9DEE9;
+    --line-soft:#E7EBF3;
+    --on-dark:#AEB6D6;
+    --on-dark-accent:#AAB4F2;
+    --dark-line:#242C52;
+    --white:#FFFFFF;
+    --maxw:1180px;
+    --font:"Helvetica Neue",Helvetica,Arial,"Segoe UI",Roboto,system-ui,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--font);color:var(--body);background:var(--white);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+  h1,h2,h3,h4{color:var(--ink);font-weight:800;letter-spacing:-0.01em;line-height:1.08;margin:0}
+  p{margin:0}
+  a{color:inherit;text-decoration:none}
+  svg{display:block}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+  .eyebrow{font-size:12.5px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--blue-electric);margin-bottom:20px}
+  .eyebrow.muted{color:var(--muted)}
+  .eyebrow.on-dark{color:var(--on-dark-accent)}
+
+  .btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--font);font-size:15.5px;font-weight:700;letter-spacing:0.01em;padding:15px 26px;border:1px solid transparent;cursor:pointer;transition:background .18s,color .18s,border-color .18s}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-primary:hover{background:var(--blue-deep)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .btn .arw,.textlink .arw{transition:transform .18s}
+  .btn:hover .arw,.textlink:hover .arw{transform:translateX(4px)}
+  .textlink{display:inline-flex;align-items:center;gap:8px;color:var(--blue-electric);font-weight:700;font-size:15.5px}
+
+  header{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:saturate(180%) blur(12px);border-bottom:1px solid var(--line-soft)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:70px}
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand .mark{background:var(--ink-strong);color:#fff;font-weight:800;font-size:13px;letter-spacing:0.18em;padding:6px 8px 5px;line-height:1}
+  .brand .name{color:var(--ink-strong);font-weight:800;font-size:19px;letter-spacing:-0.01em}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a{font-size:15px;font-weight:600;color:#4A5064}
+  .nav-links a:hover{color:var(--blue)}
+
+  /* Hero */
+  .hero{padding:70px 0 30px}
+  .hero-grid{display:grid;grid-template-columns:1.02fr 0.98fr;gap:54px;align-items:start}
+  .hero h1{font-size:clamp(2.5rem,5vw,4.15rem);letter-spacing:-0.02em;color:var(--ink-strong)}
+  .hero .lede{font-size:19px;color:#4A5064;margin-top:26px;max-width:40ch;line-height:1.5}
+  .hero-actions{display:flex;align-items:center;gap:26px;margin-top:32px;flex-wrap:wrap}
+  .hero-note{margin-top:26px;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:9px}
+  .hero-note .tick{width:16px;height:16px;color:var(--blue-electric)}
+
+  /* Chat widget */
+  .chat{background:#fff;border:1px solid var(--line);box-shadow:0 34px 70px -34px rgba(10,14,42,.34),0 10px 26px -14px rgba(10,14,42,.12)}
+  .chat-top{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line-soft)}
+  .chat-top .dot{width:9px;height:9px;background:var(--blue-electric);border-radius:50%}
+  .chat-top .ct-name{font-weight:800;color:var(--ink);font-size:14px}
+  .chat-top .ct-live{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-electric);display:flex;align-items:center;gap:6px}
+  .chat-top .ct-live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue-electric);animation:livePulse 1.8s ease-in-out infinite}
+  @keyframes livePulse{0%,100%{opacity:.4}50%{opacity:1}}
+  .chat-body{padding:20px 18px;background:var(--band-2);display:flex;flex-direction:column;justify-content:flex-end;gap:12px;height:432px;overflow:hidden}
+  .js .chat-anim .chat-item{opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease}
+  .js .chat-anim .chat-item.pending{display:none}
+  .js .chat-anim .chat-item.show{opacity:1;transform:none}
+  .typing{align-self:flex-end;background:var(--blue);padding:13px 16px;display:inline-flex;gap:5px;align-items:center}
+  .typing span{width:7px;height:7px;background:rgba(255,255,255,.75);border-radius:50%;animation:blink 1.2s infinite}
+  .typing span:nth-child(2){animation-delay:.18s}
+  .typing span:nth-child(3){animation-delay:.36s}
+  @keyframes blink{0%,60%,100%{opacity:.3}30%{opacity:1}}
+  .msg{max-width:82%;padding:11px 14px;font-size:14px;line-height:1.45}
+  .msg .who{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.6;margin-bottom:5px}
+  .msg.patient{background:#fff;border:1px solid var(--line);color:#3A3F52;align-self:flex-start;box-shadow:0 2px 6px -3px rgba(10,14,42,.16)}
+  .msg.reply{background:var(--blue);color:#fff;align-self:flex-end}
+  .msg.reply .who{opacity:.82}
+  .sysnote{align-self:center;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:var(--ink);background:#fff;border:1px solid var(--line);padding:8px 13px;box-shadow:0 4px 14px -10px rgba(10,14,42,.4)}
+  .sysnote .ic{width:18px;height:18px;flex:0 0 auto;display:flex;align-items:center;justify-content:center}
+  .sysnote.verify .ic{background:var(--blue);color:#fff}
+  .sysnote.route{color:#fff;background:var(--ink-strong);border-color:var(--ink-strong)}
+  .sysnote.route .ic{color:var(--on-dark-accent)}
+  .sysnote small{display:block;font-weight:600;color:var(--muted);font-size:10.5px}
+  .sysnote.route small{color:var(--on-dark)}
+  .chat-foot{padding:11px 18px;border-top:1px solid var(--line-soft);background:#fff;font-size:12px;color:var(--muted);display:flex;align-items:center;justify-content:space-between}
+  .chat-foot .cap{color:var(--blue-electric);font-weight:700}
+  /* Intake summary card inside the chat */
+  .msg-summary{align-self:stretch;background:#fff;border:1px solid var(--line);box-shadow:0 8px 20px -14px rgba(10,14,42,.4);padding:14px 16px}
+  .msg-summary .sum-h{font-size:12.5px;font-weight:800;color:var(--ink);margin-bottom:11px}
+  .msg-summary .sum-row{display:flex;justify-content:space-between;gap:12px;font-size:12px;padding:6px 0;border-top:1px solid var(--line-soft)}
+  .msg-summary .sum-row:first-of-type{border-top:0}
+  .msg-summary .sum-row span{color:var(--muted);font-weight:600;flex:0 0 auto}
+  .msg-summary .sum-row b{color:var(--ink);font-weight:700;text-align:right}
+  .msg-summary .sum-foot{display:flex;align-items:center;gap:8px;margin-top:11px;padding-top:11px;border-top:1px solid var(--line-soft);font-size:11.5px;font-weight:700;color:var(--blue)}
+  .msg-summary .sum-foot .ck{width:16px;height:16px;flex:0 0 auto;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center}
+  .msg-summary .sum-foot .ck svg{width:10px;height:10px}
+
+  /* Trust strip */
+  .trust{background:var(--ink-strong);color:#fff}
+  .trust .wrap{display:flex;align-items:center;justify-content:center;gap:14px 30px;flex-wrap:wrap;padding:20px 28px}
+  .trust .ti{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:700;letter-spacing:.03em;color:#DDE1EE}
+  .trust .ti svg{width:16px;height:16px;color:var(--on-dark-accent);flex:0 0 auto}
+  .trust .sep{width:1px;height:16px;background:var(--dark-line)}
+
+  section{padding:92px 0}
+  .band{background:var(--band)}
+  .dark{background:var(--ink-strong)}
+  .sec-head{max-width:660px;margin-bottom:52px}
+  .sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+  .sec-head h2{font-size:clamp(2rem,3.6vw,2.7rem);letter-spacing:-0.02em}
+  .dark .sec-head h2{color:#fff}
+  .sec-head p{margin-top:18px;font-size:18px;color:var(--body)}
+  .dark .sec-head p{color:var(--on-dark)}
+
+  /* ===== SAFETY PIPELINE ===== */
+  .ribbon{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:58px}
+  .ribbon .std{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:12.5px;font-weight:700;letter-spacing:.02em;padding:9px 14px}
+  .ribbon .std svg{width:14px;height:14px;color:var(--blue);flex:0 0 auto}
+
+  .flow{position:relative;max-width:840px;margin:0 auto}
+  .flow-spine{position:absolute;left:31px;top:14px;bottom:14px;width:2px;background:var(--line)}
+  .flow-pulse{position:absolute;left:-4px;width:10px;height:10px;border-radius:50%;background:var(--blue-electric);box-shadow:0 0 0 5px rgba(26,31,203,.16);animation:pulseTravel 9s linear infinite}
+  @keyframes pulseTravel{0%{top:0;opacity:0}3%{opacity:1}82%{top:100%;opacity:1}88%{opacity:0}100%{opacity:0}}
+  .stages{list-style:none;margin:0;padding:0}
+  .stage{position:relative;padding:0 0 26px 82px;min-height:64px}
+  .stage:last-child{padding-bottom:0}
+  .node{position:absolute;left:17px;top:0;width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid var(--line);color:var(--muted);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;z-index:2;animation:nodeScan 9s ease infinite;animation-delay:calc(var(--d) * 1s)}
+  @keyframes nodeScan{0%,100%{background:#fff;border-color:var(--line);color:var(--muted);transform:scale(1)}7%{background:var(--blue);border-color:var(--blue);color:#fff;transform:scale(1.12)}72%{background:var(--blue);border-color:var(--blue);color:#fff;transform:scale(1)}}
+  .card{background:#fff;border:1px solid var(--line);padding:22px 24px;animation:cardScan 9s ease infinite;animation-delay:calc(var(--d) * 1s)}
+  @keyframes cardScan{0%,100%{border-color:var(--line);box-shadow:0 1px 0 rgba(10,14,42,.02)}7%{border-color:var(--blue);box-shadow:-3px 0 0 0 var(--blue),0 20px 44px -30px rgba(10,14,42,.55)}72%{border-color:var(--blue);box-shadow:-3px 0 0 0 var(--blue),0 20px 44px -30px rgba(10,14,42,.55)}}
+  .card-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+  .card-h .ci{width:34px;height:34px;flex:0 0 auto;background:var(--blue-tint-2);color:var(--blue);display:flex;align-items:center;justify-content:center}
+  .card-h .ci svg{width:19px;height:19px}
+  .card-h h3{font-size:18px}
+  .card-h .tag{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.09em;text-transform:uppercase;background:var(--blue-electric);color:#fff;padding:4px 8px}
+  .card p{font-size:15px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+  .chips span{font-size:11.5px;font-weight:700;letter-spacing:.02em;color:var(--blue);background:var(--blue-tint);padding:6px 10px;opacity:.5;animation:chipScan 9s ease infinite;animation-delay:calc(var(--d) * 1s)}
+  @keyframes chipScan{0%,100%{opacity:.5}10%{opacity:1}72%{opacity:1}}
+
+  /* Step 3 fork */
+  .branch{margin-top:16px;position:relative;padding-left:26px}
+  .branch::before{content:"";position:absolute;left:0;top:-6px;bottom:20px;width:2px;background:var(--line)}
+  .branch::after{content:"";position:absolute;left:0;top:24px;width:22px;height:2px;background:var(--line)}
+  .emg{background:var(--ink-strong);color:#fff;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+  .emg .warn{width:22px;height:22px;flex:0 0 auto;color:var(--on-dark-accent)}
+  .emg b{color:#fff;font-size:14px;font-weight:800;display:block;margin-bottom:3px}
+  .emg small{color:var(--on-dark);font-size:12px;line-height:1.45;display:block}
+  .branch .cont{margin-top:12px;font-size:12.5px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:8px}
+  .branch .cont::before{content:"";width:22px;height:2px;background:var(--blue)}
+
+  /* Step 4 OD seal */
+  .hitl-row{display:flex;gap:22px;align-items:center;margin-top:16px}
+  .seal{width:70px;height:70px;flex:0 0 auto;border-radius:50%;border:2px solid var(--blue);background:var(--blue-tint-2);display:flex;align-items:center;justify-content:center}
+  .seal svg{width:36px;height:36px;color:var(--blue)}
+  .seal .draw{stroke-dasharray:34;stroke-dashoffset:34;animation:sealDraw 9s ease infinite;animation-delay:calc(var(--d) * 1s)}
+  @keyframes sealDraw{0%,100%{stroke-dashoffset:34}14%{stroke-dashoffset:0}72%{stroke-dashoffset:0}}
+  .hitl-row .htext .htl{font-size:13px;font-weight:800;color:var(--ink)}
+  .hitl-row .htext p{margin-top:4px;font-size:14px}
+
+  @media (prefers-reduced-motion:reduce){
+    .flow-pulse{display:none}
+    .chat-top .ct-live::before{animation:none}
+    .node{animation:none;background:var(--blue);border-color:var(--blue);color:#fff}
+    .card{animation:none;border-color:var(--line)}
+    .chips span{animation:none;opacity:1}
+    .seal .draw{animation:none;stroke-dashoffset:0}
+  }
+
+  /* Safe strap */
+  .safe-strap{background:var(--blue);color:#fff;padding:30px 34px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-top:56px}
+  .safe-strap .qc{font-size:clamp(1.25rem,2vw,1.55rem);font-weight:800;color:#fff;letter-spacing:-0.01em;line-height:1.3;flex:1;min-width:280px}
+  .safe-strap .qc b{color:#BFC8FF}
+
+  /* Worries — trust / objection handling (reveal answer on hover) */
+  .worries{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;align-items:start}
+  .worry{border:1px solid var(--line);background:#fff;padding:28px 30px 22px;transition:border-color .2s ease,box-shadow .2s ease}
+  .worry:hover,.worry.open{border-color:var(--blue);box-shadow:0 22px 46px -34px rgba(10,14,42,.5)}
+  .worry .w-role{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-electric)}
+  .worry .w-topic{font-size:19px;font-weight:800;color:var(--ink);letter-spacing:-0.01em;margin:8px 0 16px}
+  .worry .w-fear{display:flex;gap:12px;align-items:flex-start}
+  .worry .w-fear .w-warn{width:26px;height:26px;flex:0 0 auto;border-radius:50%;background:var(--blue-tint-2);color:var(--muted);display:flex;align-items:center;justify-content:center}
+  .worry .w-fear .w-warn svg{width:15px;height:15px}
+  .worry .w-fear q{quotes:none;font-style:italic;color:#5A6072;font-size:15.5px;font-weight:600;line-height:1.45}
+  .worry .w-toggle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px;padding:15px 0 0;border:0;border-top:1px solid var(--line-soft);width:100%;background:none;font-family:inherit;text-align:left;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);cursor:pointer;user-select:none}
+  .worry .w-toggle .chev{width:16px;height:16px;flex:0 0 auto;transition:transform .3s ease}
+  .worry .w-ans{max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .3s ease,margin-top .4s ease}
+  .worry .w-ans p{font-size:15px;color:var(--ink);font-weight:500;line-height:1.5}
+  .worry .w-ans p b{color:var(--blue);font-weight:800}
+  .worry:hover .w-ans,.worry.open .w-ans{max-height:260px;opacity:1;margin-top:14px}
+  .worry:hover .w-toggle .chev,.worry.open .w-toggle .chev{transform:rotate(180deg)}
+  .worry:focus-within .w-ans{max-height:260px;opacity:1;margin-top:14px}
+  .worry:focus-within .w-toggle .chev{transform:rotate(180deg)}
+  .worries-foot{margin-top:26px;display:flex;align-items:center;gap:14px;background:var(--blue-tint-2);border:1px solid var(--line);padding:20px 24px;font-size:15.5px;color:var(--ink);font-weight:600}
+  .worries-foot .wf-seal{width:30px;height:30px;flex:0 0 auto;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center}
+  .worries-foot .wf-seal svg{width:16px;height:16px}
+  .worries-foot b{color:var(--blue);font-weight:800}
+
+  /* Morning-after — blue standout card, inside the pipeline flow */
+  .flow-outcome{max-width:840px;margin:46px auto 0;display:grid;grid-template-columns:1fr 0.95fr;gap:0;background:var(--blue);color:#fff;box-shadow:0 44px 84px -48px rgba(0,32,160,.65);overflow:hidden}
+  .fo-left{padding:36px 38px}
+  .flow-outcome .fo-eyebrow{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#BFC8FF;margin-bottom:13px}
+  .flow-outcome h3{color:#fff;font-size:clamp(1.4rem,2.2vw,1.9rem);letter-spacing:-0.02em;line-height:1.14}
+  .flow-outcome .fo-left p{margin-top:13px;font-size:15px;color:#D8DEF7;max-width:34ch}
+  .fo-card{background:#fff;padding:24px 26px;display:flex;flex-direction:column}
+  .fo-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .fo-card .fo-t{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .fo-card .fo-time{font-size:12px;font-weight:700;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .fo-card .fo-time::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--blue-electric)}
+  .fo-rows{display:flex;flex-direction:column;gap:9px}
+  .fo-row{display:flex;align-items:center;gap:11px;padding:12px 13px;font-size:13.5px;color:var(--ink);font-weight:600;background:var(--band);border:1px solid var(--line)}
+  .fo-row .ck{width:19px;height:19px;flex:0 0 auto;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center}
+  .fo-row .ck svg{width:10px;height:10px}
+  .fo-row.urgent{border-color:var(--blue);background:var(--blue-tint-2)}
+  .fo-row.urgent .u-ic{width:19px;height:19px;flex:0 0 auto;color:var(--blue);display:flex;align-items:center;justify-content:center}
+  .fo-row.urgent .u-ic svg{width:15px;height:15px}
+  .fo-row .pri{margin-left:auto;font-size:9.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#fff;background:var(--blue);padding:3px 7px}
+  .fo-row b{color:var(--blue);font-weight:800}
+  .js .flow-outcome .fo-row{opacity:0}
+  .js .flow-outcome.in .fo-row{animation:foDrop .5s ease both}
+  .js .flow-outcome.in .fo-rows .fo-row:nth-child(1){animation-delay:.06s}
+  .js .flow-outcome.in .fo-rows .fo-row:nth-child(2){animation-delay:.2s}
+  .js .flow-outcome.in .fo-rows .fo-row:nth-child(3){animation-delay:.34s}
+  @keyframes foDrop{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.js .flow-outcome .fo-row{opacity:1;animation:none}}
+
+  /* Problem */
+  .prob{display:grid;grid-template-columns:0.9fr 1.1fr;gap:56px;align-items:center}
+  .prob .big{font-size:clamp(4rem,9vw,7rem);font-weight:800;color:var(--blue);letter-spacing:-0.03em;line-height:0.9}
+  .prob .bigcap{font-size:18px;color:var(--ink);font-weight:700;margin-top:14px;max-width:22ch}
+  .prob .bigsub{font-size:15px;color:var(--body);margin-top:14px;max-width:34ch}
+  .realities{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+  .realities li{padding:22px 0;border-bottom:1px solid var(--line);display:flex;gap:20px}
+  .realities .rn{font-size:14px;font-weight:800;color:var(--blue-electric);flex:0 0 auto;padding-top:2px}
+  .realities h3{font-size:18px;margin-bottom:6px}
+  .realities p{font-size:15px}
+
+  /* Scenario tabs */
+  .scn{display:grid;grid-template-columns:0.82fr 1.18fr;gap:40px;align-items:stretch}
+  .scn-tabs{display:flex;flex-direction:column;border-top:1px solid var(--line)}
+  .scn-tab{text-align:left;background:none;border:0;border-bottom:1px solid var(--line);padding:19px 16px 19px 0;font-family:var(--font);font-size:16px;font-weight:700;color:var(--ink);cursor:pointer;display:flex;align-items:center;gap:14px;transition:color .15s,padding .15s}
+  .scn-tab .q{width:26px;height:26px;flex:0 0 auto;background:var(--blue-tint-2);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800}
+  .scn-tab:hover{color:var(--blue)}
+  .scn-tab.active{color:var(--blue);padding-left:8px}
+  .scn-tab.active .q{background:var(--blue);color:#fff}
+  .scn-panel{border:1px solid var(--line);background:#fff;padding:34px 34px 30px;display:none;flex-direction:column}
+  .scn-panel.active{display:flex}
+  .scn-panel .pq{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-bottom:16px}
+  .scn-bubble{background:var(--band-2);border-left:3px solid var(--line);padding:14px 16px;font-size:15px;color:#3A3F52;margin-bottom:16px}
+  .scn-reply{background:var(--blue);color:#fff;padding:16px 18px;font-size:15.5px;line-height:1.5}
+  .scn-reply .who{display:block;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.82;margin-bottom:6px}
+  .scn-tag{margin-top:auto;padding-top:22px;display:flex;align-items:center;gap:10px;font-size:13px;font-weight:700;color:var(--blue)}
+  .scn-tag.route{color:var(--ink)}
+  .scn-tag .dotic{width:20px;height:20px;flex:0 0 auto;display:flex;align-items:center;justify-content:center;color:#fff;background:var(--blue)}
+  .scn-tag.route .dotic{background:var(--ink-strong)}
+
+  /* Who */
+  .who-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line)}
+  .who-c{padding:34px 30px 34px 0;border-right:1px solid var(--line-soft)}
+  .who-c:last-child{border-right:0;padding-right:0}
+  .who-c .wk{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--blue-electric)}
+  .who-c h3{font-size:20px;margin:12px 0 12px}
+  .who-c p{font-size:15px}
+
+  /* Results */
+  .metricband{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line);margin-bottom:56px}
+  .metricband .m{padding:34px 26px;border-right:1px solid var(--line)}
+  .metricband .m:last-child{border-right:0}
+  .metricband .num{font-size:clamp(2.1rem,3.4vw,2.9rem);font-weight:800;color:var(--blue);letter-spacing:-0.02em;line-height:1}
+  .metricband .cap{font-size:14px;color:var(--body);margin-top:11px}
+  .feature-quote{border-left:3px solid var(--blue);padding:6px 0 6px 28px;margin-bottom:44px;max-width:860px}
+  .feature-quote p{font-size:clamp(1.3rem,2.3vw,1.85rem);font-weight:700;color:var(--ink);letter-spacing:-0.01em;line-height:1.35}
+  .feature-quote .by{margin-top:20px;font-size:14px;color:var(--muted);font-weight:600}
+  .feature-quote .by b{color:var(--ink);font-weight:800}
+  .quotes{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .quote{border:1px solid var(--line);padding:26px 26px;background:#fff;display:flex;flex-direction:column}
+  .quote .qt{font-size:15px;color:#3A3F52;line-height:1.55}
+  .quote .by{margin-top:auto;padding-top:20px}
+  .quote .by .n{font-weight:800;color:var(--ink);font-size:14.5px}
+  .quote .by .r{font-size:12.5px;color:var(--muted);margin-top:3px}
+
+  /* Takes */
+  .takes{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line)}
+  .take{padding:32px 26px;border-right:1px solid var(--line)}
+  .take:last-child{border-right:0}
+  .take .tk{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .take .tv{font-size:19px;font-weight:800;color:var(--ink);margin-top:12px;letter-spacing:-0.01em}
+
+  /* CTA */
+  .cta{background:var(--ink-strong);color:#fff}
+  .cta .wrap{display:grid;grid-template-columns:1.2fr 0.8fr;gap:48px;align-items:center}
+  .cta h2{color:#fff;font-size:clamp(2rem,3.4vw,2.7rem);letter-spacing:-0.02em}
+  .cta p{color:var(--on-dark);margin-top:20px;font-size:17px;max-width:42ch}
+  .cta-actions{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+  .cta .btn-primary{width:100%;justify-content:center;background:#fff;color:var(--ink-strong)}
+  .cta .btn-primary:hover{background:var(--blue-tint)}
+  .cta .fine{color:#7E86A8;font-size:13px}
+
+  footer{background:#fff;border-top:1px solid var(--line);padding:52px 0 42px}
+  .foot-top{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-bottom:26px;border-bottom:1px solid var(--line-soft)}
+  .foot-tag{font-weight:800;color:var(--ink);font-size:17px;letter-spacing:-0.01em}
+  .foot-links{display:flex;gap:26px}
+  .foot-links a{font-size:14px;font-weight:600;color:#4A5064}
+  .foot-links a:hover{color:var(--blue)}
+  .foot-fine{margin-top:22px;font-size:12.5px;color:var(--muted);line-height:1.6;max-width:920px}
+  .foot-fine + .foot-fine{margin-top:10px}
+
+  .js .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+  .js .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}}
+
+  @media (max-width:960px){
+    .hero-grid{grid-template-columns:1fr;gap:42px}
+    .hero .visual{max-width:480px}
+    .prob{grid-template-columns:1fr;gap:36px}
+    .worries{grid-template-columns:1fr}
+    .flow-outcome{grid-template-columns:1fr;gap:0}
+    .scn{grid-template-columns:1fr;gap:26px}
+    .who-row{grid-template-columns:1fr}
+    .who-c{border-right:0;padding-right:0;border-bottom:1px solid var(--line-soft)}
+    .metricband{grid-template-columns:repeat(2,1fr)}
+    .metricband .m:nth-child(2n){border-right:0}
+    .metricband .m:nth-child(-n+2){border-bottom:1px solid var(--line)}
+    .quotes{grid-template-columns:repeat(2,1fr)}
+    .cta .wrap{grid-template-columns:1fr;gap:30px}
+    .takes{grid-template-columns:repeat(2,1fr)}
+    .take:nth-child(2n){border-right:0}
+    .take:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  }
+  @media (max-width:720px){
+    .nav-links{display:none}
+    .trust .sep{display:none}
+    .quotes{grid-template-columns:1fr}
+    .metricband{grid-template-columns:1fr}
+    .metricband .m{border-right:0;border-bottom:1px solid var(--line)}
+    .metricband .m:last-child{border-bottom:0}
+    .takes{grid-template-columns:1fr}
+    .take{border-right:0;border-bottom:1px solid var(--line)}
+    .take:last-child{border-bottom:0}
+    .stage{padding-left:70px}
+    .hitl-row{flex-direction:column;align-items:flex-start;gap:16px}
+    section{padding:64px 0}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand"><span class="mark">ZEISS</span><span class="name">VisioGen</span></div>
+    <nav class="nav-links">
+      <a href="#safe">How it works</a>
+      <a href="#worries">Why it's safe</a>
+      <a href="#patients">Your patients</a>
+      <a href="#results">Results</a>
+      <a href="#takes">What it takes</a>
+    </nav>
+    <a href="#cta" class="btn btn-primary">Book a walkthrough</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="eyebrow">For U.S. premium ophthalmology</div>
+        <h1>Your patients don't wait for office hours.</h1>
+        <p class="lede">VisioGen is the after-hours voice of your practice. It answers patients in seconds, escalates anything urgent to your team, and a ZEISS-trained optometrist approves every reply before it's sent.</p>
+        <div class="hero-actions">
+          <a href="#cta" class="btn btn-primary">Book a live walkthrough <span class="arw">→</span></a>
+        </div>
+        <div class="hero-note">
+          <svg class="tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          A licensed optometrist reads and approves every message. No exceptions.
+        </div>
+      </div>
+
+      <div class="visual">
+        <div class="chat">
+          <div class="chat-top">
+            <span class="dot"></span>
+            <span class="ct-name">Clearview Refractive — Chat</span>
+            <span class="ct-live">Online</span>
+          </div>
+          <div class="chat-body" id="heroChat">
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>Hi, I'm the Clearview assistant. I'm here any time, and a ZEISS-trained optometrist checks every reply before you see it. To start — what's your name?</div>
+            <div class="msg patient chat-item" data-kind="patient"><span class="who">You · 11:24 PM</span>Hi, I'm Maya.</div>
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>Nice to meet you, Maya. So how can I help tonight?</div>
+            <div class="msg patient chat-item" data-kind="patient"><span class="who">You</span>I've had blurry night vision — could I be a candidate for LASIK?</div>
+            <div class="sysnote verify chat-item" data-kind="note"><span class="ic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span>Approved by a ZEISS-trained optometrist<small>reviewed in 7s · before delivery</small></span></div>
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>Great question, Maya. Night-vision blur is one of the most common reasons people ask — many people turn out to be strong candidates. A quick screening is the surest way to confirm.</div>
+            <div class="msg patient chat-item" data-kind="patient"><span class="who">You</span>Good to know. Roughly what does it cost?</div>
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>LASIK starts at $2,200 per eye, and we offer 0% financing. I'll share exact pricing after your screening so it's specific to you.</div>
+            <div class="msg patient chat-item" data-kind="patient"><span class="who">You</span>And what's the recovery like?</div>
+            <div class="sysnote verify chat-item" data-kind="note"><span class="ic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span>Approved by a ZEISS-trained optometrist<small>reviewed in 6s · before delivery</small></span></div>
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>Most people are back to normal within a day or two, with vision sharpening over the following weeks. Want me to hold a weekday-evening screening for you?</div>
+            <div class="msg patient chat-item" data-kind="patient"><span class="who">You</span>Yes, weekday evenings are best.</div>
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>Perfect. Last thing — what's the best email and phone so our team can confirm?</div>
+            <div class="msg patient chat-item" data-kind="patient"><span class="who">You</span>maya.r@email.com · (512) 555-0148</div>
+            <div class="msg-summary chat-item" data-kind="summary">
+              <div class="sum-h">Here's what I've noted — does this look right?</div>
+              <div class="sum-row"><span>Name</span><b>Maya R.</b></div>
+              <div class="sum-row"><span>Contact</span><b>maya.r@email.com · (512) 555-0148</b></div>
+              <div class="sum-row"><span>Interested in</span><b>LASIK — night-vision blur</b></div>
+              <div class="sum-row"><span>Prefers</span><b>Weekday evenings</b></div>
+              <div class="sum-foot"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Sent to the practice — they'll confirm your screening</div>
+            </div>
+            <div class="msg reply chat-item" data-kind="reply"><span class="who">Clearview Refractive</span>All set, Maya. Our team will reach out to lock in your evening screening. Talk soon.</div>
+          </div>
+          <div class="chat-foot">
+            <span>Branded to your practice · no app to download</span>
+            <span class="cap">Lead captured ✓</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST STRIP -->
+<div class="trust">
+  <div class="wrap">
+    <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>HIPAA-architected</div>
+    <span class="sep"></span>
+    <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v14H4z"/><path d="M4 9h16M9 13h6"/></svg>Signed BAA</div>
+    <span class="sep"></span>
+    <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>100% OD-verified replies</div>
+    <span class="sep"></span>
+    <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>Full audit trail</div>
+    <span class="sep"></span>
+    <div class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>U.S. licensed optometrists</div>
+  </div>
+</div>
+
+<!-- SAFETY PIPELINE -->
+<section id="safe" class="band">
+  <div class="wrap">
+    <div class="sec-head center reveal">
+      <div class="eyebrow">How it works, end to end</div>
+      <h2>No black box. See the exact path every message takes.</h2>
+      <p>Here is everything that happens between your patient's question and your practice — a guardrail at every step, and a licensed optometrist before the send.</p>
+    </div>
+
+    <div class="ribbon reveal">
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.4 7.7 8 10 4.6-2.3 8-5 8-10V6z"/><path d="m9 12 2 2 4-4"/></svg>HIPAA</span>
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>SOC 2 Type II</span>
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16"/><path d="m8 12 2.5 2.5L16 9"/></svg>ISO 27001</span>
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l3 3v15H6z"/><path d="M9 12h6M9 16h6"/></svg>ONC HTI-1</span>
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M7 12h10"/></svg>FDA 510(k)-exempt</span>
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>TLS 1.3</span>
+      <span class="std"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h16M4 17h10"/><circle cx="18" cy="7" r="2"/><circle cx="18" cy="17" r="2"/></svg>HL7 / FHIR</span>
+    </div>
+
+    <div class="flow reveal">
+      <div class="flow-spine"><span class="flow-pulse"></span></div>
+      <ol class="stages">
+
+        <li class="stage" style="--d:0">
+          <span class="node">1</span>
+          <div class="card">
+            <div class="card-h">
+              <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg></span>
+              <h3>Patient ingestion</h3>
+            </div>
+            <p>A branded chat widget on your own website. No app to download, no friction for the patient.</p>
+            <div class="chips"><span>TLS 1.3</span><span>HTTPS · encrypted in transit</span></div>
+          </div>
+        </li>
+
+        <li class="stage" style="--d:1.35">
+          <span class="node">2</span>
+          <div class="card">
+            <div class="card-h">
+              <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M9 3v2M15 3v2M9 19v2M15 19v2M3 9h2M3 15h2M19 9h2M19 15h2"/></svg></span>
+              <h3>Clinical AI engine</h3>
+            </div>
+            <p>An ophthalmology-scoped, grounded model drafts the reply — answers come from your practice's approved knowledge, not open-ended guesses.</p>
+            <div class="chips"><span>ONC HTI-1</span><span>Zero training on PHI</span><span>Enterprise HIPAA cloud</span><span>ISO 27001</span></div>
+          </div>
+        </li>
+
+        <li class="stage" style="--d:2.7">
+          <span class="node">3</span>
+          <div class="card">
+            <div class="card-h">
+              <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v6M12 10 6 20M12 10l6 10"/><circle cx="12" cy="4" r="1.6"/></svg></span>
+              <h3>Compliance splitter</h3>
+            </div>
+            <p>Before anything else, every message is screened for red-flag intent. This is the emergency-triage guardrail.</p>
+            <div class="chips"><span>Emergency-triage guardrail</span><span>FDA 510(k)-exempt path</span></div>
+            <div class="branch">
+              <div class="emg">
+                <svg class="warn" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+                <div><b>Red-flag intent → hard triage alert</b><small>Sudden vision loss, floaters, severe pain. The reply gives an ER/urgent-care disclaimer, never a diagnosis, and the practice is notified.</small></div>
+              </div>
+              <div class="cont">Administrative &amp; clinical questions continue to human review</div>
+            </div>
+          </div>
+        </li>
+
+        <li class="stage" style="--d:4.05">
+          <span class="node">4</span>
+          <div class="card">
+            <div class="card-h">
+              <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+              <h3>Human-in-the-loop validation</h3>
+              <span class="tag">The differentiator</span>
+            </div>
+            <p>A ZEISS-trained optometrist reads the draft, edits it into your practice's voice, and approves it. Nothing reaches a patient without this step.</p>
+            <div class="hitl-row">
+              <div class="seal">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path class="draw" d="M20 6 9 17l-5-5"/></svg>
+              </div>
+              <div class="htext">
+                <div class="htl">OD approves · liability held under professional supervision</div>
+                <p>The optometrist's sign-off is what carries the clinical responsibility — not an autonomous model.</p>
+              </div>
+            </div>
+            <div class="chips"><span>U.S.-licensed OD review</span><span>Strict supervision protocol</span></div>
+          </div>
+        </li>
+
+        <li class="stage" style="--d:5.4">
+          <span class="node">5</span>
+          <div class="card">
+            <div class="card-h">
+              <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-9 12h7l-1 8 9-12h-7z"/></svg></span>
+              <h3>Secure patient delivery</h3>
+            </div>
+            <p>The verified reply reaches the patient in under 10 seconds, day or night — around the clock.</p>
+            <div class="chips"><span>End-to-end encrypted payload</span><span>&lt;10s response</span><span>24/7</span></div>
+          </div>
+        </li>
+
+        <li class="stage" style="--d:6.75">
+          <span class="node">6</span>
+          <div class="card">
+            <div class="card-h">
+              <span class="ci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 7H6a3 3 0 0 0 0 6h3M15 7h3a3 3 0 0 1 0 6h-3M8 10h8"/></svg></span>
+              <h3>Practice integration</h3>
+            </div>
+            <p>The contact and a structured clinical summary land in your portal and inbox — ready for your ophthalmic EHR.</p>
+            <div class="chips"><span>HL7 / FHIR ready</span><span>MFA-protected portal</span><span>ModMed · EMA · Epic Kaleidoscope</span></div>
+          </div>
+        </li>
+
+      </ol>
+    </div>
+
+    <div class="flow-outcome reveal">
+      <div class="fo-left">
+        <div class="fo-eyebrow">The morning after</div>
+        <h3>You walk in to ready patients.</h3>
+        <p>Not a wall of voicemails. A short, sorted list of people who already trust you — informed, reassured, ready for their exam.</p>
+      </div>
+      <div class="fo-card">
+        <div class="fo-card-top"><span class="fo-t">This morning's queue</span><span class="fo-time">7:12 AM</span></div>
+        <div class="fo-rows">
+          <div class="fo-row urgent"><span class="u-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>1 urgent case — flagged to your team overnight<span class="pri">Priority</span></div>
+          <div class="fo-row"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>3 LASIK consults, screening-ready</div>
+          <div class="fo-row"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><b>0</b>&nbsp;missed after-hours questions</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="safe-strap reveal">
+      <div class="qc">Human review isn't a mode you switch on. <b>It's the one step this pipeline can't skip.</b></div>
+      <a href="#cta" class="btn btn-primary" style="background:#fff;color:var(--ink-strong)">Book a walkthrough <span class="arw">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- WORRIES / TRUST -->
+<section id="worries">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">The trust question</div>
+      <h2>Every serious worry about AI in your practice — answered.</h2>
+      <p>Putting AI near your patients raises fair questions: safety, control, the edge cases, and whether it fits the systems you already run. Here's how VisioGen answers each — with a ZEISS-trained optometrist behind every reply.</p>
+    </div>
+    <div class="worries reveal">
+
+      <div class="worry">
+        <div class="w-role">Surgeon &amp; owner</div>
+        <div class="w-topic">Hallucinations &amp; wrong answers</div>
+        <div class="w-fear"><span class="w-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><q>"What if it makes something up and says the wrong thing under my name?"</q></div>
+        <button class="w-toggle" type="button" aria-expanded="false">Why it can't happen <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="w-ans">
+          <p class="w-relief">It's scoped to eye care and grounded in your own approved answers, so it doesn't improvise. And a <b>ZEISS-trained optometrist approves every reply</b> before it sends. It never diagnoses.</p>
+        </div>
+      </div>
+
+      <div class="worry">
+        <div class="w-role">Clinical lead &amp; optometrists</div>
+        <div class="w-topic">Edge cases &amp; red flags</div>
+        <div class="w-fear"><span class="w-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><q>"What about the urgent cases — the ones a bot should never touch?"</q></div>
+        <button class="w-toggle" type="button" aria-expanded="false">Why it can't happen <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="w-ans">
+          <p class="w-relief">Anything urgent or outside its lane is <b>caught and escalated to your team</b>, with an urgent-care nudge to the patient. The guardrails are built in, not an optional setting.</p>
+        </div>
+      </div>
+
+      <div class="worry">
+        <div class="w-role">Practice directors &amp; admins</div>
+        <div class="w-topic">Control &amp; the daily schedule</div>
+        <div class="w-fear"><span class="w-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><q>"Do I stay in control of what it says — and does it fit how we run the clinic?"</q></div>
+        <button class="w-toggle" type="button" aria-expanded="false">Why it can't happen <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="w-ans">
+          <p class="w-relief">You set the voice and the boundaries, and you see every conversation. It works around <b>your hours and OD schedule</b>, and hands clean, ready-to-book leads to your front desk.</p>
+        </div>
+      </div>
+
+      <div class="worry">
+        <div class="w-role">IT &amp; operations</div>
+        <div class="w-topic">Your patient systems</div>
+        <div class="w-fear"><span class="w-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span><q>"Will it actually work with our patient-management and EHR systems?"</q></div>
+        <button class="w-toggle" type="button" aria-expanded="false">Why it can't happen <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div class="w-ans">
+          <p class="w-relief">It connects to the tools you already run — like <b>ModMed / EMA and Epic Kaleidoscope</b> — with a roughly 30-minute setup and nothing to rip out.</p>
+        </div>
+      </div>
+
+    </div>
+    <div class="worries-foot reveal">
+      <span class="wf-seal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>
+      <div>One reason all of them hold: <b>a ZEISS-trained optometrist approves every reply</b> before it ever reaches a patient.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="patients">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Your patients, after hours</div>
+      <h2>The consult is won before your front desk opens.</h2>
+      <p>Premium procedures are considered purchases. Patients research late, compare two or three practices, and book with whoever answers first, credibly.</p>
+    </div>
+    <div class="prob reveal">
+      <div>
+        <div class="big">58%</div>
+        <div class="bigcap">of inquiries to premium practices arrive outside clinic hours.</div>
+        <div class="bigsub">Most of that interest lands when no one is at the desk — and a next-morning callback has usually already lost it.</div>
+      </div>
+      <ul class="realities">
+        <li><span class="rn">01</span><div><h3>They're ready now, not at 9 a.m.</h3><p>The questions come at 11 p.m., on a phone, mid-decision. Answer then, or answer someone else's patient.</p></div></li>
+        <li><span class="rn">02</span><div><h3>Your front desk is already full</h3><p>Cost, candidacy, recovery, insurance — the same questions on repeat, pulling staff from patients in the chair.</p></div></li>
+        <li><span class="rn">03</span><div><h3>An unsupervised bot isn't worth the risk</h3><p>One wrong clinical answer under your name is a liability you can't take. So the safe move has been to stay quiet.</p></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- SCENARIOS -->
+<section id="ask" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">What your patients ask at 11 p.m.</div>
+      <h2>Every answer is verified. Every intent is captured.</h2>
+      <p>Real questions VisioGen handles for premium eye-care practices. Pick one to see how it replies — and what it does next.</p>
+    </div>
+
+    <div class="scn reveal">
+      <div class="scn-tabs" role="tablist">
+        <button class="scn-tab active" data-scn="0"><span class="q">?</span>Am I a candidate for LASIK?</button>
+        <button class="scn-tab" data-scn="1"><span class="q">?</span>How much does it cost?</button>
+        <button class="scn-tab" data-scn="2"><span class="q">?</span>What's recovery like?</button>
+        <button class="scn-tab" data-scn="3"><span class="q">?</span>Do you take my insurance?</button>
+        <button class="scn-tab" data-scn="4"><span class="q">?</span>My eye hurts — what do I do?</button>
+      </div>
+      <div class="scn-stage">
+        <div class="scn-panel active" data-scn="0">
+          <div class="pq">Candidacy · high intent</div>
+          <div class="scn-bubble">"I have astigmatism and wear contacts. Can I still get LASIK?"</div>
+          <div class="scn-reply"><span class="who">Verified reply</span>Yes — many people with astigmatism and a contact-lens history are strong candidates. What matters is your cornea and prescription, which we confirm with a short screening. Want me to hold a slot this week?</div>
+          <div class="scn-tag"><span class="dotic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Consult offered · lead captured to your portal</div>
+        </div>
+        <div class="scn-panel" data-scn="1">
+          <div class="pq">Pricing · comparison shopping</div>
+          <div class="scn-bubble">"Roughly how much is LASIK, and do you offer payment plans?"</div>
+          <div class="scn-reply"><span class="who">Verified reply</span>LASIK starts at $2,200 per eye, and we offer 0% financing over 24 months. Your exact quote depends on your screening, and I can send it the same day. Should I get you booked?</div>
+          <div class="scn-tag"><span class="dotic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Price framed · financing surfaced · lead captured</div>
+        </div>
+        <div class="scn-panel" data-scn="2">
+          <div class="pq">Recovery · reassurance</div>
+          <div class="scn-bubble">"How long until I can drive and go back to work after LASIK?"</div>
+          <div class="scn-reply"><span class="who">Verified reply</span>Most patients are back to work and driving within a day or two, and vision keeps sharpening over the following weeks. Your surgeon will give you specifics for your eyes at the visit. Want the pre-op guide sent over?</div>
+          <div class="scn-tag"><span class="dotic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Reassured · guide offered · lead captured</div>
+        </div>
+        <div class="scn-panel" data-scn="3">
+          <div class="pq">Insurance · qualifying</div>
+          <div class="scn-bubble">"Is LASIK covered by insurance or my FSA?"</div>
+          <div class="scn-reply"><span class="who">Verified reply</span>LASIK is usually elective, so most plans don't cover it — but FSA and HSA funds almost always apply, and many patients use them with our financing. I can note your plan so the team confirms the details for you.</div>
+          <div class="scn-tag"><span class="dotic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span>Expectations set · plan noted · lead captured</div>
+        </div>
+        <div class="scn-panel" data-scn="4">
+          <div class="pq">Urgent · clinical — the safety case</div>
+          <div class="scn-bubble">"My eye is red, watering and really painful since this afternoon."</div>
+          <div class="scn-reply"><span class="who">Verified reply</span>Thanks for telling me. A red, painful eye should be seen promptly — I'm not able to advise on it myself, so I've flagged this for our team to reach out first thing. If it's severe or getting worse tonight, please call our office line or seek urgent care.</div>
+          <div class="scn-tag route"><span class="dotic"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4M12 17h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg></span>No diagnosis · escalated to on-call · practice notified</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section id="results" class="band">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow muted">Proven in U.S. pilot deployments</div>
+      <h2>Real-world performance, April–December 2025.</h2>
+      <p>Aggregate results from U.S. premium ophthalmology practices across the nine-month pilot. Every response reviewed by a ZEISS-trained optometrist before delivery.</p>
+    </div>
+
+    <div class="metricband reveal">
+      <div class="m"><div class="num">~51%</div><div class="cap">Inquiry-to-qualified-lead conversion</div></div>
+      <div class="m"><div class="num">&lt;10s</div><div class="cap">End-to-end verified response time</div></div>
+      <div class="m"><div class="num">58%</div><div class="cap">Of inquiries arrive after clinic hours</div></div>
+      <div class="m"><div class="num">100%</div><div class="cap">OD-verified before patient delivery</div></div>
+    </div>
+
+    <div class="feature-quote reveal">
+      <p>"Unlike fully automated chatbots, VisioGen requires human review before any patient-facing response. That gives us the speed of AI with the oversight needed for clinical safety, tone, and compliance — essential to protecting our brand."</p>
+      <div class="by"><b>Dan Haddad</b> · Practice Leader · Laser Eye Institute · Manhattan</div>
+    </div>
+
+    <div class="quotes reveal">
+      <div class="quote"><p class="qt">"It not only helps us capture and convert more leads, it also minimises call interruptions by answering common inquiries instantly."</p><div class="by"><div class="n">Candy Simerson</div><div class="r">Owner · iCandy Consulting · Tucson</div></div></div>
+      <div class="quote"><p class="qt">"Every inquiry is documented and each response recorded. That transparency has made our intake far more reliable and accountable."</p><div class="by"><div class="n">Katie Meeks</div><div class="r">Administrator · Goel Vision · Maryland</div></div></div>
+      <div class="quote"><p class="qt">"The immediate, accurate answers our prospects need have significantly improved the readiness of the leads we call."</p><div class="by"><div class="n">Srini Mutyala</div><div class="r">Medical Director · Pannu Laser Vision · Florida</div></div></div>
+      <div class="quote"><p class="qt">"An extremely useful tool for a busy refractive practice. Quick, useful, and tailored to the specifics of your practice."</p><div class="by"><div class="n">Luke Rebenitsch</div><div class="r">Medical Director · ClearSight · Oklahoma</div></div></div>
+      <div class="quote"><p class="qt">"Patients get high-intent questions answered instantly, and it helps us identify non-candidates early. The ones who come in are better prepared."</p><div class="by"><div class="n">Dilara Ozsan</div><div class="r">Marketing &amp; Growth · Manhattan Lasik Center</div></div></div>
+      <div class="quote"><p class="qt">"A clear step toward the future of patient communication — speed for patients, control for us."</p><div class="by"><div class="n">Six U.S. practices</div><div class="r">Pilot reference customers · 2025</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT IT TAKES -->
+<section id="takes">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">What it takes from your practice</div>
+      <h2>Live in two weeks. Minimal lift on your side.</h2>
+      <p>Enterprise-grade where it counts, deliberately light everywhere else. A product you can try without a committee.</p>
+    </div>
+    <div class="takes reveal">
+      <div class="take"><div class="tk">Go-live</div><div class="tv">14 days from signature</div></div>
+      <div class="take"><div class="tk">IT effort</div><div class="tv">~30-minute widget install</div></div>
+      <div class="take"><div class="tk">Term</div><div class="tv">Month-to-month, 30-day cancel</div></div>
+      <div class="take"><div class="tk">Reviews</div><div class="tv">Check-ins at Day 45 &amp; 90</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta" class="cta">
+  <div class="wrap">
+    <div class="reveal">
+      <div class="eyebrow on-dark">Next step</div>
+      <h2>See VisioGen answer your own after-hours questions.</h2>
+      <p>A 20-minute walkthrough with a real OD-verified interaction — run against the questions your practice actually gets at midnight.</p>
+    </div>
+    <div class="cta-actions reveal">
+      <a href="#" class="btn btn-primary">Book a 20-minute walkthrough <span class="arw">→</span></a>
+      <span class="fine">No slides. We'll use your real scenarios.</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-top">
+      <div class="foot-tag">Speed for patients · Control for clinics · Safety for surgeons</div>
+      <div class="foot-links"><a href="#cta">Book a walkthrough</a><a href="#">Privacy</a><a href="#">Legal Notice</a></div>
+    </div>
+    <p class="foot-fine">© ZEISS VisioGen, 2026. All rights reserved. VisioGen is a human-verified AI patient-engagement platform for U.S. ophthalmology practices; it does not provide diagnosis or treatment recommendations.</p>
+    <p class="foot-fine">Performance figures reflect aggregate outcomes from U.S. clinical deployments during the April–December 2025 pilot window. Compliance references (HIPAA, SOC 2, ISO 27001, ONC HTI-1, FDA 510(k)-exempt, HL7/FHIR) describe the intended architecture shown in this design sample. This page is a design sample and is not an official ZEISS property.</p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    document.documentElement.classList.add('js');
+    var els = document.querySelectorAll('.reveal');
+    var showAll = function(){els.forEach(function(e){e.classList.add('in');});};
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}});
+      },{threshold:0.12,rootMargin:'0px 0px -8% 0px'});
+      els.forEach(function(e){io.observe(e);});
+      setTimeout(showAll,2500);
+    } else { showAll(); }
+
+    // Animated hero chat
+    (function(){
+      var chat = document.getElementById('heroChat');
+      if(!chat) return;
+      var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var items = [].slice.call(chat.querySelectorAll('.chat-item'));
+      if(reduced){ return; }
+      chat.classList.add('chat-anim');
+      var timers = [];
+      function after(ms, fn){ timers.push(setTimeout(fn, ms)); }
+      function makeTyping(){ var t=document.createElement('div'); t.className='typing'; t.innerHTML='<span></span><span></span><span></span>'; return t; }
+      function reveal(el){ el.classList.remove('pending'); void el.offsetWidth; el.classList.add('show'); }
+      function reset(){ timers.forEach(clearTimeout); timers=[]; var s=chat.querySelector('.typing'); if(s)s.remove(); items.forEach(function(el){ el.classList.remove('show'); el.classList.add('pending'); }); }
+      function play(){
+        reset();
+        var delay = 500;
+        items.forEach(function(el){
+          var kind = el.getAttribute('data-kind');
+          if(kind === 'reply'){
+            after(delay, function(){ var t=makeTyping(); chat.insertBefore(t, el); after(950, function(){ t.remove(); reveal(el); }); });
+            delay += 1750;
+          } else { after(delay, function(){ reveal(el); }); delay += (kind==='note')?900:1350; }
+        });
+        after(delay + 3600, play);
+      }
+      if('IntersectionObserver' in window){
+        var seen=false;
+        var o=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting&&!seen){seen=true;play();}});},{threshold:0.3});
+        o.observe(chat);
+        setTimeout(function(){ if(!seen){seen=true;play();} },1500);
+      } else { play(); }
+    })();
+
+    // Scenario tabs
+    var tabs = document.querySelectorAll('.scn-tab');
+    var panels = document.querySelectorAll('.scn-panel');
+    tabs.forEach(function(t){
+      t.addEventListener('click', function(){
+        var i = t.getAttribute('data-scn');
+        tabs.forEach(function(x){x.classList.remove('active');});
+        panels.forEach(function(p){p.classList.toggle('active', p.getAttribute('data-scn')===i);});
+        t.classList.add('active');
+      });
+    });
+
+    // Worries: hover reveals the answer (CSS); tap/click toggles it on touch
+    document.querySelectorAll('.worry').forEach(function(w){
+      var t = w.querySelector('.w-toggle');
+      if(!t) return;
+      t.addEventListener('click', function(){
+        var open = w.classList.toggle('open');
+        t.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+    });
+  })();
+</script>
+</body>
+</html>
