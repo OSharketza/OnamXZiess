@@ -335,7 +335,31 @@
   .js .reveal.in{opacity:1;transform:none}
   @media (prefers-reduced-motion:reduce){.js .reveal{opacity:1;transform:none;transition:none}}
 
+  /* Cost calculator */
+  .costsec{background:var(--blue-tint-2)}
+  .calc{display:grid;grid-template-columns:0.82fr 1.18fr;gap:40px;align-items:center;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow,0 30px 60px -44px rgba(10,14,42,.5))}
+  .calc-inputs{padding:36px 34px;border-right:1px solid var(--line)}
+  .calc-field + .calc-field{margin-top:28px}
+  .calc-field .cf-top{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:12px}
+  .calc-field .cf-label{font-size:13px;font-weight:700;color:var(--ink);letter-spacing:.01em}
+  .calc-field .cf-val{font-family:var(--font);font-size:22px;font-weight:800;color:var(--blue);letter-spacing:-0.01em;font-variant-numeric:tabular-nums}
+  .calc input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:4px;background:var(--line);outline:none;border-radius:0;cursor:pointer}
+  .calc input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;background:var(--blue);border:3px solid #fff;box-shadow:0 2px 8px -2px rgba(10,14,42,.5);cursor:pointer;border-radius:50%}
+  .calc input[type=range]::-moz-range-thumb{width:18px;height:18px;background:var(--blue);border:3px solid #fff;box-shadow:0 2px 8px -2px rgba(10,14,42,.5);cursor:pointer;border-radius:50%}
+  .calc input[type=range]:focus-visible::-webkit-slider-thumb{outline:2px solid var(--blue-electric);outline-offset:2px}
+  .calc-field .cf-scale{display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  .calc-outputs{padding:34px 34px;display:flex;flex-direction:column;gap:0}
+  .co{padding:16px 0;border-top:1px solid var(--line-soft);display:flex;align-items:baseline;gap:16px}
+  .co:first-child{border-top:0;padding-top:0}
+  .co .con{font-size:clamp(1.9rem,3vw,2.5rem);font-weight:800;color:var(--ink);letter-spacing:-0.02em;line-height:1;font-variant-numeric:tabular-nums;min-width:5.2ch;text-align:right}
+  .co.hot .con{color:var(--blue)}
+  .co .col{font-size:14px;color:var(--body);line-height:1.35}
+  .co.hot .col{color:var(--ink);font-weight:600}
+  .calc-foot{margin-top:22px;font-size:12.5px;color:var(--muted);line-height:1.55;max-width:70ch}
+
   @media (max-width:960px){
+    .calc{grid-template-columns:1fr}
+    .calc-inputs{border-right:0;border-bottom:1px solid var(--line)}
     .hero-grid{grid-template-columns:1fr;gap:42px}
     .hero .visual{max-width:480px}
     .prob{grid-template-columns:1fr;gap:36px}
@@ -692,6 +716,37 @@
   </div>
 </section>
 
+<!-- COST CALCULATOR -->
+<section id="cost" class="costsec">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">The math</div>
+      <h2>See what after-hours is costing you.</h2>
+      <p>You're already paying for the clicks. Most of them land when the desk is closed. Move the sliders to your own numbers.</p>
+    </div>
+    <div class="calc reveal">
+      <div class="calc-inputs">
+        <div class="calc-field">
+          <div class="cf-top"><span class="cf-label">Monthly search ad spend</span><span class="cf-val" id="spendOut">$40,000</span></div>
+          <input type="range" id="spend" min="5000" max="150000" step="1000" value="40000" aria-label="Monthly search ad spend">
+          <div class="cf-scale"><span>$5k</span><span>$150k</span></div>
+        </div>
+        <div class="calc-field">
+          <div class="cf-top"><span class="cf-label">Average cost per click</span><span class="cf-val" id="cpcOut">$35</span></div>
+          <input type="range" id="cpc" min="10" max="90" step="1" value="35" aria-label="Average cost per click">
+          <div class="cf-scale"><span>$10</span><span>$90</span></div>
+        </div>
+      </div>
+      <div class="calc-outputs">
+        <div class="co"><div class="con" id="outSpend">$23,200</div><div class="col">of your ad spend lands after hours each month</div></div>
+        <div class="co"><div class="con" id="outVisitors">663</div><div class="col">after-hours visitors a month, when no one's at the desk</div></div>
+        <div class="co hot"><div class="con" id="outLeads">~338</div><div class="col">qualified leads VisioGen would recover from them</div></div>
+      </div>
+    </div>
+    <p class="calc-foot reveal">Assumes 58% of inquiries arrive outside clinic hours and a ~51% inquiry-to-qualified-lead rate, from VisioGen's April–December 2025 U.S. pilot. Your practice, your numbers.</p>
+  </div>
+</section>
+
 <!-- SCENARIOS -->
 <section id="ask" class="band">
   <div class="wrap">
@@ -824,6 +879,29 @@
 <script>
   (function(){
     document.documentElement.classList.add('js');
+
+    // Cost calculator
+    (function(){
+      var spend = document.getElementById('spend'), cpc = document.getElementById('cpc');
+      if(!spend || !cpc) return;
+      var AFTER_HOURS = 0.58, LEAD_RATE = 0.51;
+      var fmt = function(n){ return n.toLocaleString('en-US'); };
+      function calc(){
+        var s = +spend.value, c = +cpc.value;
+        var clicks = s / c;
+        var ahClicks = Math.round(clicks * AFTER_HOURS);
+        var ahSpend = Math.round(s * AFTER_HOURS);
+        var leads = Math.round(ahClicks * LEAD_RATE);
+        document.getElementById('spendOut').textContent = '$' + fmt(s);
+        document.getElementById('cpcOut').textContent = '$' + c;
+        document.getElementById('outSpend').textContent = '$' + fmt(ahSpend);
+        document.getElementById('outVisitors').textContent = fmt(ahClicks);
+        document.getElementById('outLeads').textContent = '~' + fmt(leads);
+      }
+      spend.addEventListener('input', calc);
+      cpc.addEventListener('input', calc);
+      calc();
+    })();
 
     // Mobile menu toggle
     var mb = document.getElementById('menuBtn'), mm = document.getElementById('mobileMenu');
